@@ -33,7 +33,7 @@ const app = createApp({
       axios
         .get(`${apiUrl}/api/${apiPath}/admin/products`)
         .then((res) => {
-          // console.log(res.data);
+          console.log(res.data);
           this.products = res.data.products;
         })
         .catch((err) => {

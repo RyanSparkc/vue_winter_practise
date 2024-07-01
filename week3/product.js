@@ -6,12 +6,8 @@ console.log('product.js');
 // 3. 新增產品 `${apiUrl}/api/${apiPath}/admin/product`
 // 4. 刪除、編輯產品 `${apiUrl}/api/${apiPath}/admin/product/${this.tempProduct.id}`
 
-
 import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
 import { apiUrl, apiPath } from '../js/config.js';
-
-let productModal = null;
-let delProductModal = null;
 
 const app = createApp({
   data() {
@@ -22,11 +18,13 @@ const app = createApp({
       tempProduct: {
         imagesUrl: [],
       },
+      productModal: null,
+      delProductModal: null,
     };
   },
   mounted() {
     // openModal
-    productModal = new bootstrap.Modal(
+    this.productModal = new bootstrap.Modal(
       document.getElementById('productModal'),
       {
         keyboard: false,
@@ -34,7 +32,7 @@ const app = createApp({
       }
     );
 
-    delProductModal = new bootstrap.Modal(
+    this.delProductModal = new bootstrap.Modal(
       document.getElementById('delProductModal'),
       {
         keyboard: false,
@@ -83,16 +81,16 @@ const app = createApp({
           imagesUrl: [],
         };
         this.isNew = true;
-        productModal.show();
+        this.productModal.show();
       } else if (status === 'edit') {
         this.tempProduct = { ...item };
         this.isNew = false;
         // console.log('editTemp', this.tempProduct);
-        productModal.show();
+        this.productModal.show();
       } else if (status === 'delete') {
         this.tempProduct = { ...item };
         // console.log('delTemp', this.tempProduct);
-        delProductModal.show();
+        this.delProductModal.show();
       }
     },
     updateProduct() {
@@ -107,7 +105,7 @@ const app = createApp({
         .then((res) => {
           // console.log(res.data);
           alert(res.data.message);
-          productModal.hide();
+          this.productModal.hide();
           this.getProducts();
         })
         .catch((err) => {
@@ -120,7 +118,7 @@ const app = createApp({
         .then((res) => {
           // console.log(res.data);
           alert(res.data.message);
-          delProductModal.hide();
+          this.delProductModal.hide();
           this.getProducts();
         })
         .catch((err) => {
@@ -130,7 +128,7 @@ const app = createApp({
     createImages() {
       this.tempProduct.imagesUrl = [];
       this.tempProduct.imagesUrl.push('');
-    }
+    },
   },
 });
 
