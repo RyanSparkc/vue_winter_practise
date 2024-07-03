@@ -10,8 +10,8 @@ console.log('product.js');
 import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
 import { apiUrl, apiPath } from '../js/config.js';
 
-let productModal = null;
-let delProductModal = null;
+// let productModal = null;
+// let delProductModal = null;
 
 const app = createApp({
   data() {
@@ -54,7 +54,7 @@ const app = createApp({
       axios
         .get(`${apiUrl}/api/${apiPath}/admin/products?page=${page}`)
         .then((res) => {
-          // console.log(res.data);
+          console.log(res.data);
           // this.products = res.data.products;
           const { products, pagination } = res.data;
           this.products = products;
@@ -71,16 +71,16 @@ const app = createApp({
         };
         this.isNew = true;
         console.log('new', this.tempProduct);
-        productModal.show();
+        this.$refs.productModal.openModal();
       } else if (status === 'edit') {
         this.tempProduct = { ...item };
         this.isNew = false;
         // console.log('editTemp', this.tempProduct);
-        productModal.show();
+        this.$refs.productModal.openModal();
       } else if (status === 'delete') {
         this.tempProduct = { ...item };
         // console.log('delTemp', this.tempProduct);
-        delProductModal.show();
+        this.$refs.delProductModal.openModal();
       }
     },
   },
@@ -102,12 +102,17 @@ app.component('pagination', {
 // 產品模態框元件
 app.component('product-modal', {
   // 定義元件的模板、數據和方法
+  data() {
+    return {
+      productModal: null,
+    };
+  },
   template: '#productModal',
   props: ['tempProduct', 'isNew'],
   emits: ['update'],
   mounted() {
     // openModal
-    productModal = new bootstrap.Modal(
+    this.productModal = new bootstrap.Modal(
       document.getElementById('productModal'),
       {
         keyboard: false,
@@ -141,22 +146,27 @@ app.component('product-modal', {
       this.tempProduct.imagesUrl.push('');
     },
     openModal() {
-      productModal.show();
+      this.productModal.show();
     },
     closeModal() {
-      productModal.hide();
+      this.productModal.hide();
     },
   },
 });
 
 // 刪除產品模態框元件
 app.component('del-product-modal', {
+  data() {
+    return {
+      delProductModal: null,
+    };
+  },
   template: '#delProductModal',
   props: ['tempProduct'],
   emits: ['update'],
   mounted() {
     // delModal
-    delProductModal = new bootstrap.Modal(
+    this.delProductModal = new bootstrap.Modal(
       document.getElementById('delProductModal'),
       {
         keyboard: false,
@@ -179,10 +189,10 @@ app.component('del-product-modal', {
         });
     },
     openModal() {
-      delProductModal.show();
+      this.delProductModal.show();
     },
     closeModal() {
-      delProductModal.hide();
+      this.delProductModal.hide();
     },
   },
 });

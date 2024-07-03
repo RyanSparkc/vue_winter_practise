@@ -80,9 +80,9 @@
       <pagination :pages="pagination" @emit-change-pages="getProducts"></pagination>
     </div>
 
-    <product-modal :temp-product="tempProduct" :is-new="isNew" @update="getProducts"></product-modal>
+    <product-modal ref="productModal" :temp-product="tempProduct" :is-new="isNew" @update="getProducts"></product-modal>
 
-    <del-product-modal :temp-product="tempProduct" @update="getProducts"></del-product-modal>
+    <del-product-modal ref="delProductModal" :temp-product="tempProduct" @update="getProducts"></del-product-modal>
 
   </div>
     <!-- 分頁元件 -->
