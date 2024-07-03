@@ -84,6 +84,9 @@ const app = createApp({
         this.productModal.show();
       } else if (status === 'edit') {
         this.tempProduct = { ...item };
+         if (!Array.isArray(this.tempProduct.imagesUrl)) {
+           this.tempProduct.imagesUrl = [];
+         }
         this.isNew = false;
         // console.log('editTemp', this.tempProduct);
         this.productModal.show();

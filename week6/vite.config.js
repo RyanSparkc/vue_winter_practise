@@ -13,7 +13,10 @@ const DRIVE_LETTER_REGEX = /^[a-z]:/i;
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? `/${process.env.REPOSITORY_NAME}/` : '/',
+  base:
+    process.env.NODE_ENV === 'production'
+      ? `/${process.env.REPOSITORY_NAME}/`
+      : '/',
   plugins: [
     vue(),
     eslintPlugin({
@@ -21,6 +24,7 @@ export default defineConfig({
     }),
   ],
   resolve: {
+    map: [['@', './src']],
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
@@ -34,8 +38,7 @@ export default defineConfig({
           const driveLetter = match ? match[0] : '';
           // substr 是被淘汰語法，因此要改 slice
           return (
-            driveLetter
-            + name.slice(driveLetter.length).replace(INVALID_CHAR_REGEX, '')
+            driveLetter + name.slice(driveLetter.length).replace(INVALID_CHAR_REGEX, '')
           );
         },
       },
