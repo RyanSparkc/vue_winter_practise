@@ -12,7 +12,6 @@
           </tr>
         </thead>
         <tbody>
-
           <tr v-for="product in products" :key="product.id">
             <td style="width: 200px">
               <div v-if="!product.imageUrl == ''"

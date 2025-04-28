@@ -31,6 +31,7 @@
     </div>
   </nav>
   <h2>這是前台</h2>
+  <hr>
 
   <RouterView />
 </template>

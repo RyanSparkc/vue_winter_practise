@@ -6,6 +6,7 @@ console.log('product.js');
 // 3. 新增產品 `${apiUrl}/api/${apiPath}/admin/product`
 // 4. 刪除、編輯產品 `${apiUrl}/api/${apiPath}/admin/product/${this.tempProduct.id}`
 
+
 import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
 import { apiUrl, apiPath } from '../js/config.js';
 
@@ -18,28 +19,10 @@ const app = createApp({
       tempProduct: {
         imagesUrl: [],
       },
-      productModal: null,
-      delProductModal: null,
+      pagination: {},
     };
   },
   mounted() {
-    // openModal
-    this.productModal = new bootstrap.Modal(
-      document.getElementById('productModal'),
-      {
-        keyboard: false,
-        backdrop: 'static',
-      }
-    );
-
-    this.delProductModal = new bootstrap.Modal(
-      document.getElementById('delProductModal'),
-      {
-        keyboard: false,
-        backdrop: 'static',
-      }
-    );
-
     // 取得 cookie
     const token = document.cookie.replace(
       /(?:(?:^|.*;\s*)hexToken\s*\=\s*([^;]*).*$)|^.*$/,
@@ -64,13 +47,16 @@ const app = createApp({
           window.location = 'login.html';
         });
     },
-    getProducts() {
+    getProducts(page = 1) {
       axios
-        .get(`${apiUrl}/api/${apiPath}/admin/products/all`)
+        .get(`${apiUrl}/api/${apiPath}/admin/products?page=${page}`)
         .then((res) => {
-          // console.log(res.data);
-          this.products = res.data.products;
-        })
+          console.log(res.data);
+          // this.products = res.data.products;
+          const { products, pagination } = res.data;
+          this.products = products;
+          this.pagination = pagination;
+      })
         .catch((err) => {
           alert(err.response.data.message);
         });
@@ -81,21 +67,57 @@ const app = createApp({
           imagesUrl: [],
         };
         this.isNew = true;
-        this.productModal.show();
+        console.log('new', this.tempProduct);
+        this.$refs.productModalRef.openModal();
       } else if (status === 'edit') {
         this.tempProduct = { ...item };
-         if (!Array.isArray(this.tempProduct.imagesUrl)) {
-           this.tempProduct.imagesUrl = [];
-         }
         this.isNew = false;
         // console.log('editTemp', this.tempProduct);
-        this.productModal.show();
+        this.$refs.productModalRef.openModal();
       } else if (status === 'delete') {
         this.tempProduct = { ...item };
         // console.log('delTemp', this.tempProduct);
-        this.delProductModal.show();
+        this.$refs.delProductModalRef.openModal();
       }
     },
+  },
+});
+
+// 分頁元件
+app.component('pagination', {
+  // 定義元件的模板、數據和方法
+  template: '#pagination',
+  emits: ['emit-change-pages'],
+  props: ['pages'],
+  methods: {
+    emitPages(item) {
+      this.$emit('emit-change-pages', item);
+    },
+  },
+});
+
+// 產品模態框元件
+app.component('product-modal', {
+  // 定義元件的模板、數據和方法
+  data() {
+    return {
+      productModal: null,
+    };
+  },
+  template: '#productModal',
+  props: ['tempProduct', 'isNew'],
+  emits: ['update'],
+  mounted() {
+    // openModal
+    this.productModal = new bootstrap.Modal(
+      document.getElementById('productModal'),
+      {
+        keyboard: false,
+        backdrop: 'static',
+      }
+    );
+  },
+  methods: {
     updateProduct() {
       let url = `${apiUrl}/api/${apiPath}/admin/product/${this.tempProduct.id}`;
       let http = 'put';
@@ -108,21 +130,9 @@ const app = createApp({
         .then((res) => {
           // console.log(res.data);
           alert(res.data.message);
-          this.productModal.hide();
-          this.getProducts();
-        })
-        .catch((err) => {
-          alert(err.response.data.message);
-        });
-    },
-    deleteProduct() {
-      axios
-        .delete(`${apiUrl}/api/${apiPath}/admin/product/${this.tempProduct.id}`)
-        .then((res) => {
-          // console.log(res.data);
-          alert(res.data.message);
-          this.delProductModal.hide();
-          this.getProducts();
+          this.closeModal();
+          // this.getProducts();
+          this.$emit('update');
         })
         .catch((err) => {
           alert(err.response.data.message);
@@ -132,7 +142,57 @@ const app = createApp({
       this.tempProduct.imagesUrl = [];
       this.tempProduct.imagesUrl.push('');
     },
+    openModal() {
+      this.productModal.show();
+    },
+    closeModal() {
+      this.productModal.hide();
+    },
   },
 });
+
+// 刪除產品模態框元件
+app.component('del-product-modal', {
+  data() {
+    return {
+      delProductModal: null,
+    };
+  },
+  template: '#delProductModal',
+  props: ['tempProduct'],
+  emits: ['update'],
+  mounted() {
+    // delModal
+    this.delProductModal = new bootstrap.Modal(
+      document.getElementById('delProductModal'),
+      {
+        keyboard: false,
+        backdrop: 'static',
+      }
+    );
+  },
+  methods: {
+    deleteProduct() {
+      axios
+        .delete(`${apiUrl}/api/${apiPath}/admin/product/${this.tempProduct.id}`)
+        .then((res) => {
+          // console.log(res.data);
+          alert(res.data.message);
+          this.closeModal();
+          this.$emit('update');
+        })
+        .catch((err) => {
+          alert(err.response.data.message);
+        });
+    },
+    openModal() {
+      this.delProductModal.show();
+    },
+    closeModal() {
+      this.delProductModal.hide();
+    },
+  },
+});
+
 
 app.mount('#app');

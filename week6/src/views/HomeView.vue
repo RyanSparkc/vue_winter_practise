@@ -1,7 +1,6 @@
 <template>
   <div class="home">
     <h2>這是首頁</h2>
-    <hr>
     <HelloWorld />
   </div>
 </template>
